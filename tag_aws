@@ -8,6 +8,7 @@
 #  
 #  -d Dry run mode.
 #  -v vpc-id 
+#  -f tag definition file (see aws.ini for an example).
 
 import boto3, json, sys
 from boto.exception import EC2ResponseError, EC2ResponseError
@@ -15,14 +16,15 @@ import ConfigParser, getopt
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hdv:", ["--help","--vpc"])
+        opts, args = getopt.getopt(sys.argv[1:], "hdv:f:", ["--help","--vpc", "--file"])
     except getopt.GetoptError as err:
         print str(err)
         usage()
         sys.exit(2)
 
-    vpc = ""
-    dry = False
+    vpc  = ""
+    dry  = False
+    file = ""
 
     for o, a in opts:
         if o in ("-h", "--help"):
@@ -32,12 +34,14 @@ def main():
             vpc = a
         elif o == "-d":
             dry = True
+        elif o in ("-f", "--file"):
+            file = a
         else:
             assert False, "unhandled option"
 
-    # This is hard coded for a reason.  Don't touch unless you want to break things.
-    # Resoning - mapping services to calls in the API / code are not an easy or one size fits all endeavor.
-    file = "./aws.ini"
+    if not file:
+        usage()
+        sys.exit()
 
     config = ConfigParser.ConfigParser()
     config.readfp(open(file))
@@ -164,6 +168,7 @@ def usage():
       -v vpc-id
       -d Dry run mode - only specify if you want to perform a test run to see all the assets
          that will be tagged based on the services respective  section in the INI file.
+      -f Your tag definition file (see aws.ini for an example).
 
     '''
     return True

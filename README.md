@@ -1,6 +1,20 @@
 # awspy
 
-tag_aws - tag services with a set of tags defined in an INI file (aws.ini) by vpc.
+tag_aws - tag services with a set of tags defined in an INI file by vpc.
+* The file must be in INI format.
+* See aws.ini for the structure:
+```
+[elasticache]
+name=test
+some=tag
+[ec2]
+name=test2
+over=rainbow
+another=test
+[rds]
+name=test3
+tag=myrds
+```
 
 - @TO-DO - allow specifying the service section in the INI ex - ec2, rds, elasticache, etc, as a CML option (ie. only tag this service).
 - @TO-DO - cleanup/tag deletion?  maybe..
