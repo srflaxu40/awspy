@@ -1,6 +1,6 @@
 # awspy
 
-tag_aws.py - tag services with a set of tags defined in an INI file (aws.ini) by vpc.
+tag_aws - tag services with a set of tags defined in an INI file (aws.ini) by vpc.
 
 ## Development Setup
 * Mac OSX operating systems come with system-wide python - do not fuck with it.
