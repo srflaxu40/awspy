@@ -2,8 +2,8 @@
 
 tag_aws - tag services with a set of tags defined in an INI file (aws.ini) by vpc.
 
-@TO-DO - allow specifying the service section in the INI ex - ec2, rds, elasticache, etc.
-@TO-DO - cleanup/tag deletion?  maybe..
+- @TO-DO - allow specifying the service section in the INI ex - ec2, rds, elasticache, etc.
+- @TO-DO - cleanup/tag deletion?  maybe..
 
 ## Development Setup
 * Mac OSX operating systems come with system-wide python - do not fuck with it.
