@@ -45,8 +45,11 @@ def main():
     # More infos the better.
     dry_run(dry)
 
-    # Tag ec2 things
+    # Tag things
     tag_EC2(vpc, config, dry)
+    tag_RDS(vpc, config, dry)
+
+    sys.exit(0)
 
 # Dry run 
 def dry_run(dry):
@@ -55,6 +58,8 @@ def dry_run(dry):
     else:
         return
 
+    return True
+
 def display_tags(config, option):
 
     print "Tagging instances with: "
@@ -62,17 +67,45 @@ def display_tags(config, option):
         tag_key   = tag
         tag_value = config.get('ec2', tag) 
         print tag_key + "=" + tag_value
+    return True
 
 # Tag RDS by vpc-id
 def tag_RDS(vpc, config, dry=False):
     client = boto3.client('rds')
     count = 0
 
-    display_tags(config, 'rds')
+    response = client.describe_db_instances() 
 
-    
+    rds_instances = response['DBInstances']
+    for rds_instance in rds_instances:
+        name         = rds_instance['DBInstanceIdentifier']
+        print name
+        instance_vpc = rds_instance['DBSubnetGroup']['VpcId']
+        instance_arn = rds_instance['DBInstanceArn']
 
-    return
+        if vpc == instance_vpc:
+            count += 1
+
+            if dry == True:
+                print "Tagging RDS instance (dry run) " + name + " with:"
+                display_tags(config, 'rds')
+            
+            else:
+                for tag in config.options('rds'):
+                    tag_key   = tag
+                    tag_value = config.get('rds', tag) 
+
+                    response = client.add_tags_to_resource(
+                        ResourceName=instance_arn,
+                        Tags=[
+                            {
+                                'Key': tag_key,
+                                'Value': tag_value
+                            },
+                        ]
+                    )
+    print str(count) + " RDS instances tagged."
+    return True
 
 # Tag EC2 by vpc-id
 def tag_EC2(vpc, config, dry=False):
@@ -116,8 +149,10 @@ def tag_EC2(vpc, config, dry=False):
                 )
             except Exception as e:
                 print "Tagging " + instanceId + " dry-run success."
+                continue
 
     print str(count) + " instances tagged."
+    return True
 
 
 def usage():
@@ -131,6 +166,7 @@ def usage():
          that will be tagged based on the services respective  section in the INI file.
 
     '''
+    return True
 
 if __name__ == "__main__":
     main()
