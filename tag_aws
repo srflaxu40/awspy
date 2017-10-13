@@ -151,7 +151,7 @@ def tag_EC2(vpc, config, dry=False):
                 print "Tagging " + instanceId + " dry-run success."
                 continue
 
-    print str(count) + " instances tagged."
+    print str(count) + " EC2 instances tagged."
     return True
 
 
