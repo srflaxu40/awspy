@@ -1,40 +1,124 @@
 #!/usr/bin/env python
 
+# Note - This tags a list of services (sections) in an INI file.  The format can be seen
+#        in the aws.ini file inside this repo's base directory.  It is fairly straightforward.
+# USAGE:
+#
+#  ./tag_aws -v <vpc-id> -d
+#  
+#  -d Dry run mode.
+#  -v vpc-id 
 
 import boto3, json, sys
+from boto.exception import EC2ResponseError, EC2ResponseError
 import ConfigParser, getopt
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])
+        opts, args = getopt.getopt(sys.argv[1:], "hdv:", ["--help","--vpc"])
     except getopt.GetoptError as err:
         print str(err)
         usage()
         sys.exit(2)
 
+    vpc = ""
+    dry = False
 
     for o, a in opts:
-        if o == "-h":
+        if o in ("-h", "--help"):
             usage()
             sys.exit()
+        elif o in ("-v", "--vpc"):
+            vpc = a
+        elif o == "-d":
+            dry = True
         else:
             assert False, "unhandled option"
 
-    if len(sys.argv) < 2:
-        usage()
-        sys.exit()
-    else:
-        file = sys.argv[1]
+    # This is hard coded for a reason.  Don't touch unless you want to break things.
+    # Resoning - mapping services to calls in the API / code are not an easy or one size fits all endeavor.
+    file = "./aws.ini"
 
     config = ConfigParser.ConfigParser()
     config.readfp(open(file))
-    print config.sections()
+
+    # More infos the better.
+    dry_run(dry)
+
+    # Tag ec2 things
+    tag_EC2(vpc, config, dry)
+
+# Dry run 
+def dry_run(dry):
+    if dry == True:
+        print "Dry run specified.  Output will reflect resources to be tagged with updates."
+    else:
+        return
+
+# Tag RDS by vpc-id
+def tag_RDS(vpc, config, dry=False):
+    return
+
+# Tag EC2 by vpc-id
+def tag_EC2(vpc, config, dry=False):
+    client = boto3.client('ec2')
+    count  = 0
+
+    instances = client.describe_instances(
+        Filters=[
+            {
+                'Name': 'vpc-id',
+                'Values': [
+                    vpc,
+                ]
+            }
+        ]
+    )
+
+    print "Tagging instances with: "
+    for tag in config.options('ec2'):
+        tag_key   = tag
+        tag_value = config.get('ec2', tag) 
+        print tag_key + "=" + tag_value
+
+    for entry in instances['Reservations']:
+        instanceId = entry['Instances'][0]['InstanceId']
+
+        count += 1
+
+        for tag in config.options('ec2'):
+            tag_key   = tag
+            tag_value = config.get('ec2', tag) 
+
+            try:
+                response = client.create_tags(
+                    DryRun=dry,
+                    Resources=[
+                        instanceId,
+                    ],
+                    Tags=[
+                        {
+                             'Key': tag_key,
+                             'Value': tag_value
+                        },
+                    ]
+                )
+            except Exception as e:
+                print "Tagging " + instanceId + " dry-run success."
+
+    print str(count) + " instances tagged."
+
 
 def usage():
     print '''
     USAGE:
 
-      ./tag_aws filename
+      ./tag_aws <--vpc|-v>
+
+      -v vpc-id
+      -d Dry run mode - only specify if you want to perform a test run to see all the assets
+         that will be tagged based on the services respective  section in the INI file.
+
     '''
 
 if __name__ == "__main__":
