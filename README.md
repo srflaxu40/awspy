@@ -2,7 +2,7 @@
 
 tag_aws - tag services with a set of tags defined in an INI file (aws.ini) by vpc.
 
-- @TO-DO - allow specifying the service section in the INI ex - ec2, rds, elasticache, etc.
+- @TO-DO - allow specifying the service section in the INI ex - ec2, rds, elasticache, etc, as a CML option (ie. only tag this service).
 - @TO-DO - cleanup/tag deletion?  maybe..
 
 ## Development Setup
