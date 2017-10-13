@@ -9,8 +9,6 @@
 #  -d Dry run mode.
 #  -v vpc-id 
 
-# @TO-DO - allow specifying the service section in the INI ex - ec2, rds, elasticache, etc.
-
 import boto3, json, sys
 from boto.exception import EC2ResponseError, EC2ResponseError
 import ConfigParser, getopt
