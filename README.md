@@ -7,8 +7,6 @@ tag_aws - tag services with a set of tags defined in an INI file (aws.ini) by vp
 * Setup [aws credentials](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
 * You don't have to install pyenv, but this was created using python v2.7.10.
 * [Install PyEnv](https://github.com/pyenv/pyenv)
-* [Install Homebrew](https://brew.sh/)
-* (for the strong) `brew install virtualenv`
 * `pip install virtualenv`
 * `source awspy/bin/activate`
   * The above command should put you into the awspy project along with pre-installed modules.
