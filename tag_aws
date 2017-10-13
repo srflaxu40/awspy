@@ -9,6 +9,8 @@
 #  -d Dry run mode.
 #  -v vpc-id 
 
+# @TO-DO - allow specifying the service section in the INI ex - ec2, rds, elasticache, etc.
+
 import boto3, json, sys
 from boto.exception import EC2ResponseError, EC2ResponseError
 import ConfigParser, getopt
@@ -55,8 +57,23 @@ def dry_run(dry):
     else:
         return
 
+def display_tags(config, option):
+
+    print "Tagging instances with: "
+    for tag in config.options('ec2'):
+        tag_key   = tag
+        tag_value = config.get('ec2', tag) 
+        print tag_key + "=" + tag_value
+
 # Tag RDS by vpc-id
 def tag_RDS(vpc, config, dry=False):
+    client = boto3.client('rds')
+    count = 0
+
+    display_tags(config, 'rds')
+
+    
+
     return
 
 # Tag EC2 by vpc-id
@@ -75,11 +92,7 @@ def tag_EC2(vpc, config, dry=False):
         ]
     )
 
-    print "Tagging instances with: "
-    for tag in config.options('ec2'):
-        tag_key   = tag
-        tag_value = config.get('ec2', tag) 
-        print tag_key + "=" + tag_value
+    display_tags(config, 'ec2')
 
     for entry in instances['Reservations']:
         instanceId = entry['Instances'][0]['InstanceId']
