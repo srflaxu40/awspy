@@ -11,7 +11,7 @@ tag_aws - tag services with a set of tags defined in an INI file (aws.ini) by vp
 * `pip install virtualenv`
 * `source awspy/bin/activate`
   * The above command should put you into the awspy project along with pre-installed modules.
-  * If you do not install virtualenv, you'll have to install boto manually:
+  * If you do not install virtualenv, you'll have to install the modules manually:
     - `pip install boto`
     - `pip install boto3`
     - `pip install configparser`
