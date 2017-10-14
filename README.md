@@ -16,6 +16,12 @@ name=test3
 tag=myrds
 ```
 
+* Now run (see "Running" for additional opts):
+
+`./tag_aws -v vpc-122303f`
+
+---
+
 - @TO-DO - allow specifying the service section in the INI ex - ec2, rds, elasticache, etc, as a CML option (ie. only tag this service).
 - @TO-DO - cleanup/tag deletion?  maybe..
 
