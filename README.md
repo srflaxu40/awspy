@@ -18,7 +18,7 @@ tag=myrds
 
 * Now run (see "Running" for additional opts):
 
-`./tag_aws -v vpc-122303f`
+  `./tag_aws -v vpc-122303f`
 
 ---
 
