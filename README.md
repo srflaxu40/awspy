@@ -28,15 +28,7 @@ tag=myrds
 ## Development Setup
 * Mac OSX operating systems come with system-wide python - do not fuck with it.
 * Setup [aws credentials](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
-* You don't have to install pyenv, but this was created using python v2.7.10.
-* [Install PyEnv](https://github.com/pyenv/pyenv)
-* `pip install virtualenv`
-* `source awspy/bin/activate`
-  * The above command should put you into the awspy project along with pre-installed modules.
-  * If you do not install virtualenv, you'll have to install the modules manually:
-    - `pip install boto`
-    - `pip install boto3`
-    - `pip install configparser`
+* `pip install -r requirements.txt`
 
 ## Running (only requires python)
 * This script uses boto, which wraps the AWS SDK.  This requires setting up your [AWS credentials configuration](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
