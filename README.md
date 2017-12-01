@@ -31,9 +31,16 @@ tag=myrds
 * `pip install -r requirements.txt`
 
 ## Running (only requires python)
-* This script uses boto, which wraps the AWS SDK.  This requires setting up your [AWS credentials configuration](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
+
+### tag_aws
 * Have a looksy inside the aws.ini file to see a set of tags.  You can tag thingz with up to 50 tags maximum.
-* Run:
-  - `./tag_aws -v vpc-122303f`
 * Dry run:
   - `./tag_aws -v vpc-122303f -d`
+* Run:
+  - `./tag_aws -v vpc-122303f`
+
+### clean
+* Dry run:
+  - `./clean --snaps 'jenkins-ebs-snapshot-*' --keep 10 -d`
+* Run:
+  - `./clean --snaps 'jenkins-ebs-snapshot-*' --keep 10`
