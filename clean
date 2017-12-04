@@ -49,9 +49,9 @@ def main():
 
         if count < 0:
             print "Deleting: " + snaps.id , "-" , snaps.start_time , "-" , snaps.volume_size , "\n"
-            delete_snaps(snaps.id)
+            delete_snaps(connection, snaps.id)
 
-def delete_snaps(snapshot, dry_run=False):
+def delete_snaps(connection, snapshot, dry_run=False):
 
     try:
         connection.delete_snapshot(snapshot, dry_run)
