@@ -15,7 +15,7 @@ def main():
         sys.exit(2)
 
     snaps = None
-    amis  = False
+    imags = None
     keep  = 0
     dry_run = False
 
@@ -26,7 +26,7 @@ def main():
         elif o in ("-s", "--snaps"):
             snaps = a
         elif o in ("-a", "--amis"):
-            amis = a
+            imags = a
         elif o in ("-k", "--keep"):
             keep = int(a)
         elif o in ("-d"):
@@ -40,16 +40,34 @@ def main():
         sys.exit()
 
     connection=ec2.connect_to_region('us-east-1')
-    snapshots=connection.get_all_snapshots(filters={'description':snaps})
 
-    count = keep
 
-    for snaps in snapshots:
-        count-=1
+    # Process snaps:
+    if snaps != None:
 
-        if count < 0:
-            print "Deleting: " + snaps.id , "-" , snaps.start_time , "-" , snaps.volume_size , "\n"
-            delete_snaps(connection, snaps.id)
+        snapshots=connection.get_all_snapshots(filters={'description':snaps})
+
+        count = keep
+    
+        for snaps in snapshots:
+            count-=1
+  
+            if count < 0:
+                print "Deleting: " + snaps.id , "-" , snaps.start_time , "-" , snaps.volume_size , "\n"
+                delete_snaps(connection, snaps.id, dry_run)
+
+    # Process images:
+    if imags != None:
+        count = keep
+
+        images = connection.get_all_images(owners='self', filters={"tag:Name" : imags})
+
+        for image in images:
+            count-=1
+
+            if count < 0:
+                print "Deleting: " + image.id , ", along with corresponding snapshot..."
+                delete_amis(connection, image.id, dry_run)
 
 def delete_snaps(connection, snapshot, dry_run=False):
 
@@ -57,6 +75,15 @@ def delete_snaps(connection, snapshot, dry_run=False):
         connection.delete_snapshot(snapshot, dry_run)
     except Exception as e:
         print str(e)
+    return
+
+def delete_amis(connection, ami, dry_run=False):
+
+    try:
+        connection.deregister_image(ami, True, dry_run)
+    except Exception as e:
+        print str(e)
+
     return
 
 def usage():
