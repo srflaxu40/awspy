@@ -90,7 +90,21 @@ def usage():
     print '''
 USAGE:
 
-    clean snaps "jenkins"
+--keep 
+
+  "keep last 'n'"; where n is an integer
+
+--snaps
+  
+  "a regex to match snaps"
+
+--amis
+
+  " a regex to match amis"
+
+    ./clean --snaps 'jenkins-ebs-snapshot-*' --keep 10
+
+    ./clean --amis 'kube_slave*' --keep 10
 
 '''
 

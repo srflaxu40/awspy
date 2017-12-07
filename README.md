@@ -39,8 +39,14 @@ tag=myrds
 * Run:
   - `./tag_aws -v vpc-122303f`
 
-### clean
+### clean snaps:
 * Dry run:
   - `./clean --snaps 'jenkins-ebs-snapshot-*' --keep 10 -d`
 * Run:
   - `./clean --snaps 'jenkins-ebs-snapshot-*' --keep 10`
+
+### clean amis:
+* Dry run:
+	  - `./clean --amis 'kube_slave*' --keep 10 -d`
+* Run:
+  - `./clean --amis 'kube_slave*' --keep 10`
