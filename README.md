@@ -1,24 +1,7 @@
 # awspy
 
-tag_aws - tag services with a set of tags defined in an INI file by vpc.
-* The file must be in INI format.
-* See aws.ini for the structure:
-```
-[elasticache]
-name=test
-some=tag
-[ec2]
-name=test2
-over=rainbow
-another=test
-[rds]
-name=test3
-tag=myrds
-```
-
-* Now run (see "Running" for additional opts):
-
-  `./tag_aws -v vpc-122303f`
+* Notes:
+  * Be sure to set the correct profile through `export AWS_PROFILE=<some profile in ~/.aws/credentials>`
 
 ---
 
@@ -28,6 +11,8 @@ tag=myrds
 ## Development Setup
 * Mac OSX operating systems come with system-wide python - do not fuck with it.
 * Setup [aws credentials](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
+* If you have pyenv-virtualenv installed for python, feel free to activate the virtual env:
+`pyenv activate awspy`
 * `pip install -r requirements.txt`
 
 ## Running (only requires python)
@@ -50,3 +35,7 @@ tag=myrds
 	  - `./clean --amis 'kube_slave*' --keep 10 -d`
 * Run:
   - `./clean --amis 'kube_slave*' --keep 10`
+
+## IAM Key Rotation:
+* Run:
+  - `./rotate` # Follow prompt...

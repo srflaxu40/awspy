@@ -1,0 +1,131 @@
+#!/usr/bin/env python
+
+from boto import iam
+import sys, getopt, re, json
+
+# TO DO - implement MFA audit
+
+
+def main():
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hd", ["help"])
+    except getopt.GetoptError as err:
+        print(err)
+        usage()
+        sys.exit(2)
+
+    snaps = None
+    imags = None
+    keep  = 0
+    dry_run = False
+
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        else:
+            assert False, "unhandled option"
+
+    #if len(sys.argv) < 2:
+    #    usage()
+    #    sys.exit()
+
+    connection   = iam.connect_to_region('us-east-1')
+    jsonUsersObj = get_keys(connection)
+    users        = jsonUsersObj.list_users_response.users
+    response     = list_users(connection, users)
+  
+    if response == "Y":
+        deactivate_users(connection, users)
+
+
+def deactivate_users(connection, users):
+
+    for user in users:
+        mfa_devices = get_mfa_device(connection, user.user_name)
+
+        if 'mfa_devices' in mfa_devices.list_mfa_devices_response.list_mfa_devices_result and len(mfa_devices.list_mfa_devices_response.list_mfa_devices_result.mfa_devices) > 0:
+            user_name = mfa_devices.list_mfa_devices_response.list_mfa_devices_result.mfa_devices[0].user_name
+
+            print mfa_devices.list_mfa_devices_response.list_mfa_devices_result.mfa_devices[0].user_name
+
+            keys = connection.get_all_access_keys(user_name)
+
+            print """
+-------------------------------------------------------------------------------------------------------
+
+Deleting Access Key
+###################
+"""
+            for key in keys.list_access_keys_response.list_access_keys_result.access_key_metadata:
+                print "User: " + user_name
+                print "Key: " + key.access_key_id
+                #connection.delete_access_key(key.access_key_id, user_name)
+
+
+def list_users(connection, users):
+
+    print """
+################################################
+Users with keys - These keys will be deactivated
+################################################
+"""
+    for user in users:
+        mfa_devices = get_mfa_device(connection, user.user_name)
+
+        if 'mfa_devices' in mfa_devices.list_mfa_devices_response.list_mfa_devices_result and len(mfa_devices.list_mfa_devices_response.list_mfa_devices_result.mfa_devices) > 0:
+            user_name = mfa_devices.list_mfa_devices_response.list_mfa_devices_result.mfa_devices[0].user_name
+
+            print """
+--------------------------------------------------------------------------------------------------------
+#####
+User:
+#####
+"""
+            print mfa_devices.list_mfa_devices_response.list_mfa_devices_result.mfa_devices[0].user_name
+
+            keys = connection.get_all_access_keys(user_name)
+
+            print """
+#####
+Keys:
+#####
+"""
+            for key in keys.list_access_keys_response.list_access_keys_result.access_key_metadata:
+                print key.access_key_id
+
+    print """
+######################################################
+Do you wish to continue to deactivate all keys? (Y/N):
+######################################################
+"""
+    response = raw_input('(Y/N)?')
+   
+    if response == "Y":
+       return response 
+
+def get_keys(connection):
+    users = connection.get_all_users()
+
+    return users
+
+
+def get_mfa_device(connection, username):
+    mfa_devices = connection.get_all_mfa_devices(username)
+
+    return mfa_devices
+
+def usage():
+    print '''
+USAGE:
+    
+    This script only deletes users with MFA keys.  This is how the lookup is done, and how we distinguish
+    between an service account, and a user account.
+
+    ./rotate
+
+'''
+
+if __name__ == "__main__":
+    main()
