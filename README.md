@@ -36,6 +36,6 @@
 * Run:
   - `./clean --amis 'kube_slave*' --keep 10`
 
-## IAM Key Rotation:
+### IAM Key Rotation:
 * Run:
   - `./rotate` # Follow prompt...
