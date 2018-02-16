@@ -36,6 +36,9 @@
 * Run:
   - `./clean --amis 'kube_slave*' --keep 10`
 
-### IAM Key Rotation:
+### IAM Key Deactivation:
+* This script goes through users in IAM, deletes their keys forcing them to log in and create new ones.
+* This requires users have MFA auth enabled.  This can be checked in the UI.  MFA is how individual user
+  accounts are distinguished versus service accounts used for applications, etc, that you would not want to delete (AWS Keys).
 * Run:
   - `./rotate` # Follow prompt...
