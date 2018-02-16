@@ -40,5 +40,12 @@
 * This script goes through users in IAM, deletes their keys forcing them to log in and create new ones.
 * This requires users have MFA auth enabled.  This can be checked in the UI.  MFA is how individual user
   accounts are distinguished versus service accounts used for applications, etc, that you would not want to delete (AWS Keys).
+* First ensure you have the right *AWS_PROFILE* set.  These are located in the `~/.aws/credentials` file.  In this case, I 
+  am going to use the default account:
+
+```
+export AWS_PROFILE=default
+```
+
 * Run:
   - `./rotate` # Follow prompt...
