@@ -61,7 +61,7 @@ Deleting Access Key
             for key in keys.list_access_keys_response.list_access_keys_result.access_key_metadata:
                 print "User: " + user_name
                 print "Key: " + key.access_key_id
-                #connection.delete_access_key(key.access_key_id, user_name)
+                connection.delete_access_key(key.access_key_id, user_name)
 
 
 def list_users(connection, users):
