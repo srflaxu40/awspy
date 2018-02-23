@@ -5,41 +5,78 @@ import sys, getopt, re, json
 
 # TO DO - implement MFA audit
 
-
 def main():
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hd", ["help"])
+        opts, args = getopt.getopt(sys.argv[1:], "hlu:", ["help", "list", "user="])
     except getopt.GetoptError as err:
         print(err)
         usage()
         sys.exit(2)
 
-    snaps = None
-    imags = None
-    keep  = 0
     dry_run = False
+    user  = None
+
+    connection   = iam.connect_to_region('us-east-1')
+    jsonUsersObj = get_users(connection)
+    users        = jsonUsersObj.list_users_response.users
 
     for o, a in opts:
         if o in ("-h", "--help"):
             usage()
             sys.exit()
+        if o in ("-l", "--list"):
+            list_users(connection, users)
+            sys.exit()
+        if o in ("-u", "--user"):
+            user = a
+            get_user(connection, users, user)
+            sys.exit()
         else:
             assert False, "unhandled option"
 
-    #if len(sys.argv) < 2:
-    #    usage()
-    #    sys.exit()
+    if user:
+        print "Deleting user..."
+        sys.exit()
 
-    connection   = iam.connect_to_region('us-east-1')
-    jsonUsersObj = get_keys(connection)
-    users        = jsonUsersObj.list_users_response.users
-    response     = list_users(connection, users)
+    list_users(connection, users)
+    response     = delete_prompt()
   
     if response == "Y":
         deactivate_users(connection, users)
 
+# Get a single user by username:
+def get_user(connection, users, username):
 
+    for user in users:
+        if user.user_name == username:
+            delete_user(connection, username)
+
+# Get all users
+def get_users(connection):
+    users = connection.get_all_users()
+
+    return users
+
+# Delete an individual user's keys specified by --user flag:
+def delete_user(connection, username):
+    
+    mfa_devices = get_mfa_device(connection, username)
+
+    if 'mfa_devices' in mfa_devices.list_mfa_devices_response.list_mfa_devices_result and len(mfa_devices.list_mfa_devices_response.list_mfa_devices_result.mfa_devices) > 0:
+        user_name = mfa_devices.list_mfa_devices_response.list_mfa_devices_result.mfa_devices[0].user_name
+
+        print mfa_devices.list_mfa_devices_response.list_mfa_devices_result.mfa_devices[0].user_name
+
+        keys = connection.get_all_access_keys(user_name)
+
+        for key in keys.list_access_keys_response.list_access_keys_result.access_key_metadata:
+            print "User: " + user_name
+            print "Key: " + key.access_key_id
+            print "Deleting keys...  User now has no keys."
+            connection.delete_access_key(key.access_key_id, user_name)
+
+# Deactivate (force rotate by deletion of all keys) all users with MFA devices enabled: 
 def deactivate_users(connection, users):
 
     for user in users:
@@ -64,6 +101,7 @@ Deleting Access Key
                 connection.delete_access_key(key.access_key_id, user_name)
 
 
+# List all users:
 def list_users(connection, users):
 
     print """
@@ -95,6 +133,11 @@ Keys:
             for key in keys.list_access_keys_response.list_access_keys_result.access_key_metadata:
                 print key.access_key_id
 
+    return True
+
+# Delete?
+def delete_prompt():
+
     print """
 ######################################################
 Do you wish to continue to deactivate all keys? (Y/N):
@@ -105,17 +148,13 @@ Do you wish to continue to deactivate all keys? (Y/N):
     if response == "Y":
        return response 
 
-def get_keys(connection):
-    users = connection.get_all_users()
-
-    return users
-
-
+# Get MFA device for username:
 def get_mfa_device(connection, username):
     mfa_devices = connection.get_all_mfa_devices(username)
 
     return mfa_devices
 
+# Display USAGE:
 def usage():
     print '''
 USAGE:
@@ -123,7 +162,17 @@ USAGE:
     This script only deletes users with MFA keys.  This is how the lookup is done, and how we distinguish
     between an service account, and a user account.
 
+    To rotate all keys:
+
     ./rotate
+
+    To delete an individual's keys:
+
+    ./rotate --user=johndoe
+
+    To simply list users:
+
+    ./rotate --list
 
 '''
 
