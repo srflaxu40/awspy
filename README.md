@@ -32,7 +32,7 @@
 
 ### clean amis:
 * Dry run:
-	  - `./clean --amis 'kube_slave*' --keep 10 -d`
+  - `./clean --amis 'kube_slave*' --keep 10 -d`
 * Run:
   - `./clean --amis 'kube_slave*' --keep 10`
 
