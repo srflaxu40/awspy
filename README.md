@@ -49,3 +49,9 @@ export AWS_PROFILE=default
 
 * Run:
   - `./rotate` # Follow prompt...
+
+* To delete an individual user's keys:
+  - `./rotate --user=johndoe`
+
+* To list users:
+  - `./rotate --list`
