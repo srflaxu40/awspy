@@ -6,7 +6,7 @@
 ---
 
 - @TO-DO - allow specifying the service section in the INI ex - ec2, rds, elasticache, etc, as a CML option (ie. only tag this service).
-- @TO-DO - cleanup/tag deletion?  maybe..
+- @TO-DO - Add ability to delete an instance.
 
 ## Development Setup
 * Mac OSX operating systems come with system-wide python - do not fuck with it.
