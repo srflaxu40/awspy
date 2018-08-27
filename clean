@@ -19,6 +19,7 @@ def main():
     keep  = 0
     dry_run = False
     region = None
+    tag   = None
 
     for o, a in opts:
         if o in ("-h", "--help"):
