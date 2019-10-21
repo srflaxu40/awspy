@@ -2,5 +2,5 @@ boto==2.48.0
 certifi==2017.11.5
 click==6.7
 PyYAML==3.12
-urllib3==1.22
+urllib3==1.24.2
 voluptuous==0.10.5
